@@ -20,7 +20,9 @@ public class AICarController : MonoBehaviour, ICarController
 
     [Header("Sensors")]
     public float SensorLength = 5.0f;
+    public float SensorLengthAvoidAngle = 5.0f;
     public float FrontSensorAngle = 30.0f;
+    public float FrontSensorAngleSmall = 15.0f;
     public float FrontSensorDistance= 0.5f;
     public float FrontSensorForwardDistance = 1.33f;
     public Vector3 FrontSensorPosition;
@@ -50,13 +52,22 @@ public class AICarController : MonoBehaviour, ICarController
     // Update is called once per frame
     void FixedUpdate()
     {
-        Sensors();
+        float avoidAngle = 0.0f;
+        bool avoiding = Sensors(out avoidAngle);
+
         _inputs = UnityEngine.Vector3.zero;
-        _inputs.x = CalculateSteering();
+
+        if (!avoiding)
+        {
+            _inputs.x = CalculateSteering();
+        }
+        else {
+            _inputs.x = avoidAngle;
+        }
         _inputs.z = CalculateThrottle();
     }
 
-    private void Sensors()
+    private bool Sensors(out float avoidAngle)
     {
         
 
@@ -65,75 +76,108 @@ public class AICarController : MonoBehaviour, ICarController
         sensorStartPos += transform.forward * FrontSensorPosition.z;
         sensorStartPos += transform.up * FrontSensorPosition.y;
 
-        float centerSensor = getCenterSensor(sensorStartPos);
-        float leftSensor = getLeftSensor(sensorStartPos);
-        float leftSensorOutw = getLeftSensorOutward(sensorStartPos);
-        float rightSensor = getRightSensor(sensorStartPos);
-        float rightSensorOutw = getRightSensorOutward(sensorStartPos);
-    }
-
-    private float getCenterSensor(Vector3 sensorStartPos)
-    {
+        bool avoiding = false;
+        float avoidMultiplier = 0.0f;
         RaycastHit hit;
 
+        // Center
         Vector3 startPosition = sensorStartPos;
         if (Physics.Raycast(startPosition, transform.forward, out hit, SensorLength))
         {
-            Debug.DrawLine(startPosition, hit.point);
+            if (ShouldAvoid(hit))
+            {
+                Debug.DrawLine(startPosition, hit.point);
+                avoiding = true;
+            }
         }
 
-        return 0;
-    }
-
-    private float getLeftSensor(Vector3 sensorStartPos)
-    {
-        RaycastHit hit;
-        Vector3 startPosition = Vector3.zero;
-        startPosition = sensorStartPos + (transform.right * FrontSensorDistance);
-        if (Physics.Raycast(startPosition, transform.forward, out hit, SensorLength)) { 
-            Debug.DrawLine(startPosition, hit.point);
-        }
-
-        return 0.0f;
-    }
-
-    private float getLeftSensorOutward(Vector3 sensorStartPos)
-    {
-        RaycastHit hit;
-        Vector3 startPosition = Vector3.zero;
-        startPosition = sensorStartPos - (transform.right * FrontSensorDistance );
-        if (Physics.Raycast(startPosition, Quaternion.AngleAxis(-1*FrontSensorAngle, transform.up) * transform.forward, out hit, SensorLength))
-        {
-            Debug.DrawLine(startPosition, hit.point);
-        }
-
-        return 0.0f;
-    }
-
-    private float getRightSensor(Vector3 sensorStartPos)
-    {
-        RaycastHit hit;
-        Vector3 startPosition = Vector3.zero;
+        // Left
+        startPosition = Vector3.zero;
         startPosition = sensorStartPos - (transform.right * FrontSensorDistance);
         if (Physics.Raycast(startPosition, transform.forward, out hit, SensorLength))
         {
-            Debug.DrawLine(startPosition, hit.point);
+            if (ShouldAvoid(hit))
+            {
+                Debug.DrawLine(startPosition, hit.point);
+                avoiding = true;
+                avoidMultiplier += 1.5f;
+            }
         }
 
-        return 0.0f;
-    }
-
-    private float getRightSensorOutward(Vector3 sensorStartPos)
-    {
-        RaycastHit hit;
-        Vector3 startPosition = Vector3.zero;
-        startPosition = sensorStartPos + (transform.right * FrontSensorDistance);
-        if (Physics.Raycast(startPosition, Quaternion.AngleAxis(FrontSensorAngle, transform.up) * transform.forward, out hit, SensorLength))
+        // Left angle
+        startPosition = Vector3.zero;
+        startPosition = sensorStartPos - (transform.right * FrontSensorDistance);
+        if (Physics.Raycast(startPosition, Quaternion.AngleAxis(-1 * FrontSensorAngle, transform.up) * transform.forward, out hit, SensorLengthAvoidAngle))
         {
-            Debug.DrawLine(startPosition, hit.point);
+            if (ShouldAvoid(hit))
+            {
+                Debug.DrawLine(startPosition, hit.point);
+                avoiding = true;
+                avoidMultiplier += 1.0f;
+            }
         }
-        return 0;
+
+        // Left angle small
+        startPosition = Vector3.zero;
+        startPosition = sensorStartPos - (transform.right * FrontSensorDistance);
+        if (Physics.Raycast(startPosition, Quaternion.AngleAxis(-1 * FrontSensorAngleSmall, transform.up) * transform.forward, out hit, SensorLengthAvoidAngle))
+        {
+            if (ShouldAvoid(hit))
+            {
+                Debug.DrawLine(startPosition, hit.point);
+                avoiding = true;
+                avoidMultiplier += 0.5f;
+            }
+        }
+
+        // Right
+        startPosition = Vector3.zero;
+        startPosition = sensorStartPos + (transform.right * FrontSensorDistance);
+        if (Physics.Raycast(startPosition, transform.forward, out hit, SensorLength))
+        {
+            if (ShouldAvoid(hit))
+            {
+                Debug.DrawLine(startPosition, hit.point);
+                avoiding = true;
+                avoidMultiplier += -1.5f;
+            }
+        }
+
+        // Right angle small
+        startPosition = Vector3.zero;
+        startPosition = sensorStartPos + (transform.right * FrontSensorDistance);
+        if (Physics.Raycast(startPosition, Quaternion.AngleAxis(FrontSensorAngleSmall, transform.up) * transform.forward, out hit, SensorLengthAvoidAngle))
+        {
+            if (ShouldAvoid(hit))
+            {
+                Debug.DrawLine(startPosition, hit.point);
+                avoiding = true;
+                avoidMultiplier += -1.0f;
+            }
+        }
+
+        // Right angle
+        startPosition = Vector3.zero;
+        startPosition = sensorStartPos + (transform.right * FrontSensorDistance);
+        if (Physics.Raycast(startPosition, Quaternion.AngleAxis(FrontSensorAngle, transform.up) * transform.forward, out hit, SensorLengthAvoidAngle))
+        {
+            if (ShouldAvoid(hit))
+            {
+                Debug.DrawLine(startPosition, hit.point);
+                avoiding = true;
+                avoidMultiplier += -0.5f;
+            }
+        }
+
+        avoidAngle = avoidMultiplier * MaxSteeringAngle;
+        return avoiding;
     }
+
+    private bool ShouldAvoid(RaycastHit hit) {
+        return hit.collider.CompareTag("Obstacle");
+    }
+
+
 
     private void OnTriggerEnter(Collider other)
     {
