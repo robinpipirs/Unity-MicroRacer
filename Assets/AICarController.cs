@@ -22,11 +22,12 @@ public class AICarController : MonoBehaviour, ICarController
     public float SensorLength = 5.0f;
     public float SensorLengthAvoidAngle = 5.0f;
     public float FrontSensorAngle = 30.0f;
-    public float FrontSensorAngleSmall = 15.0f;
     public float FrontSensorDistance= 0.5f;
     public float FrontSensorForwardDistance = 1.33f;
     public Vector3 FrontSensorPosition;
 
+    public float TargetSteerAngle = 0.0f;
+    public float TurnSpeed = 5.0f;
     // Start is called before the first frame update
     void Start()
     {
@@ -64,7 +65,15 @@ public class AICarController : MonoBehaviour, ICarController
         else {
             _inputs.x = avoidAngle;
         }
+
+        _inputs.x = Mathf.Lerp(_inputs.x, TargetSteerAngle, Time.deltaTime * TurnSpeed);
+
         _inputs.z = CalculateThrottle();
+    }
+
+    private void LerpToSteerAngle()
+    {
+        
     }
 
     private bool Sensors(out float avoidAngle)
@@ -80,19 +89,8 @@ public class AICarController : MonoBehaviour, ICarController
         float avoidMultiplier = 0.0f;
         RaycastHit hit;
 
-        // Center
-        Vector3 startPosition = sensorStartPos;
-        if (Physics.Raycast(startPosition, transform.forward, out hit, SensorLength))
-        {
-            if (ShouldAvoid(hit))
-            {
-                Debug.DrawLine(startPosition, hit.point);
-                avoiding = true;
-            }
-        }
-
         // Left
-        startPosition = Vector3.zero;
+        Vector3 startPosition = Vector3.zero;
         startPosition = sensorStartPos - (transform.right * FrontSensorDistance);
         if (Physics.Raycast(startPosition, transform.forward, out hit, SensorLength))
         {
@@ -117,19 +115,6 @@ public class AICarController : MonoBehaviour, ICarController
             }
         }
 
-        // Left angle small
-        startPosition = Vector3.zero;
-        startPosition = sensorStartPos - (transform.right * FrontSensorDistance);
-        if (Physics.Raycast(startPosition, Quaternion.AngleAxis(-1 * FrontSensorAngleSmall, transform.up) * transform.forward, out hit, SensorLengthAvoidAngle))
-        {
-            if (ShouldAvoid(hit))
-            {
-                Debug.DrawLine(startPosition, hit.point);
-                avoiding = true;
-                avoidMultiplier += 0.5f;
-            }
-        }
-
         // Right
         startPosition = Vector3.zero;
         startPosition = sensorStartPos + (transform.right * FrontSensorDistance);
@@ -143,19 +128,6 @@ public class AICarController : MonoBehaviour, ICarController
             }
         }
 
-        // Right angle small
-        startPosition = Vector3.zero;
-        startPosition = sensorStartPos + (transform.right * FrontSensorDistance);
-        if (Physics.Raycast(startPosition, Quaternion.AngleAxis(FrontSensorAngleSmall, transform.up) * transform.forward, out hit, SensorLengthAvoidAngle))
-        {
-            if (ShouldAvoid(hit))
-            {
-                Debug.DrawLine(startPosition, hit.point);
-                avoiding = true;
-                avoidMultiplier += -1.0f;
-            }
-        }
-
         // Right angle
         startPosition = Vector3.zero;
         startPosition = sensorStartPos + (transform.right * FrontSensorDistance);
@@ -166,6 +138,26 @@ public class AICarController : MonoBehaviour, ICarController
                 Debug.DrawLine(startPosition, hit.point);
                 avoiding = true;
                 avoidMultiplier += -0.5f;
+            }
+        }
+
+        // Center
+        if (avoidMultiplier == 0) {
+            startPosition = sensorStartPos;
+            if (Physics.Raycast(startPosition, transform.forward, out hit, SensorLength))
+            {
+                if (ShouldAvoid(hit))
+                {
+                    if (hit.normal.x < 0)
+                    {
+                        avoidMultiplier = 1f;
+                    }
+                    else {
+                        avoidMultiplier = -1f;
+                    }
+                    Debug.DrawLine(startPosition, hit.point);
+                    avoiding = true;
+                }
             }
         }
 
