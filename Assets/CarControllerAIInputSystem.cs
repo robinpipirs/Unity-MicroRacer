@@ -4,7 +4,7 @@ using Random = UnityEngine.Random;
 
 
 [RequireComponent(typeof(CarControllerSystem))]
-public class CarControllerAIInputSystem : MonoBehaviour, ICarController
+public class CarControllerAIInputSystem : MonoBehaviour
 {
     public enum BrakeCondition
     {

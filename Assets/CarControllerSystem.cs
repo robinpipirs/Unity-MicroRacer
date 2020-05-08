@@ -12,8 +12,11 @@ public class CarControllerSystem : MonoBehaviour
     [SerializeField] bool isPlayer = true;
     public bool IsPlayer { get { return isPlayer; } set { isPlayer = value; } }
 
-
-    private ICarController _carController;
+    [SerializeField] bool isAI = false;
+    public bool IsAI { get { return isAI; } set { isAI = value; } }
+    
+    private CarControllerUserInputSystem _userCarController;
+    private CarControllerAIInputSystem _aiCarController;
 
     // Input names to read using GetAxis
 
@@ -195,7 +198,9 @@ public class CarControllerSystem : MonoBehaviour
 
         boost = maxBoost;
 
-        _carController = GetComponent<ICarController>();
+        _userCarController = GetComponent<CarControllerUserInputSystem>();
+        _aiCarController = GetComponent<CarControllerAIInputSystem>();
+
         _rb = GetComponent<Rigidbody>();
         spawnPosition = transform.position;
         spawnRotation = transform.rotation;
@@ -247,7 +252,15 @@ public class CarControllerSystem : MonoBehaviour
         {
 
             Vector3 _inputs = Vector3.zero;
-            _inputs = _carController.GetInputs();
+
+            if (IsAI)
+            {
+                _inputs = _aiCarController.GetInputs();
+
+            }
+            else { 
+                _inputs = _userCarController.GetInputs();
+            }
 
             // Accelerate & brake
             throttle = _inputs.z * 5;

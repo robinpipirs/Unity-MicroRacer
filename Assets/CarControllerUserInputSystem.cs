@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CarControllerUserInputSystem : MonoBehaviour, ICarController
+public class CarControllerUserInputSystem : MonoBehaviour
 {
 
     private CarControllerSystem m_Car; // the car controller we want to use
