@@ -7,10 +7,13 @@ public class CheckpointProgressTracker : MonoBehaviour
 {
     private List<CheckpointProgressTracker> _opponentRaceCars;
 
+    public Transform Racecars;
+
     public Transform Checkpoints;
     private List<Checkpoint> _checkpointNodes;
     private int _currentNode = 0;
 
+    public string RacePosition;
     public string LapTime = "00:00:000";
     public string LastLapTime = "00:00:000";
     public string BestLapTime = "00:00:000";
@@ -18,6 +21,8 @@ public class CheckpointProgressTracker : MonoBehaviour
     private float bestLapTimeFloat = float.MaxValue;
     private float startTime;
 
+    public int laps;
+    public int TotalLaps;
     public int Laps;
     public int TargetCheckpoint;
     public float DistanceToTargetCheckpoint;
@@ -42,18 +47,38 @@ public class CheckpointProgressTracker : MonoBehaviour
         var distanceToTargetCheckpoint = Vector3.Distance(transform.position, _checkpointNodes[_currentNode].transform.position);
         DistanceToTargetCheckpoint = distanceToTargetCheckpoint;
 
+        int opponentsInFront = 0;
+
         for (int i = 0; i < _opponentRaceCars.Count; i++) {
             var opponentCar = _opponentRaceCars[i];
 
-            bool isAtTheSameLap = opponentCar.Laps < Laps;
+            bool opponentIsInFront = opponentCar.Laps > Laps;
+            if (opponentIsInFront) {
+                opponentsInFront++;
+                continue;
+            } else 
+            {
+                opponentIsInFront = opponentCar.Laps == Laps && opponentCar.TargetCheckpoint > TargetCheckpoint;
+                if (opponentIsInFront)
+                {
+                    opponentsInFront++;
+                    continue;
+                }
+                else {
 
-            if (opponentCar.Laps < Laps) {
-                break;
+                    opponentIsInFront = opponentCar.TargetCheckpoint == TargetCheckpoint && opponentCar.DistanceToTargetCheckpoint < DistanceToTargetCheckpoint;
+                    if (opponentIsInFront) {
+                        opponentsInFront++;
+                        continue;
+                    }
+                }
             }
-            
         }
 
+        int racePosition = opponentsInFront;
+        racePosition++;
 
+        RacePosition = string.Format("{0} / {1}", racePosition, _opponentRaceCars.Count);
     }
 
     private void UpdateElapsedTime()
@@ -74,7 +99,7 @@ public class CheckpointProgressTracker : MonoBehaviour
 
     private void GetCheckpointProgressTrackers()
     {
-        CheckpointProgressTracker[] opponentRaceCarTrackers = GetComponents<CheckpointProgressTracker>();
+        CheckpointProgressTracker[] opponentRaceCarTrackers = Racecars.GetComponentsInChildren<CheckpointProgressTracker>();
         _opponentRaceCars = new List<CheckpointProgressTracker>();
 
         for (int i = 0; i < opponentRaceCarTrackers.Length; i++)
