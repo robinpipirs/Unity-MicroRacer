@@ -23,10 +23,9 @@ namespace UnityStandardAssets.Vehicles.Car
             // pass the input to the car!
             float h =Input.GetAxis("Horizontal");
             float v = Input.GetAxis("Vertical");
-            v = v * 5;
 #if !MOBILE_INPUT
             float handbrake = Input.GetAxis("Jump");
-            m_Car.Move(h, v, v, handbrake);
+            m_Car.Move(h, v, v, 0f);
 #else
             m_Car.Move(h, v, v, 0f);
 #endif

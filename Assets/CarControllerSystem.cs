@@ -3,9 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(ICarController))]
 [RequireComponent(typeof(Rigidbody))]
-public class WheelVehicleVr : MonoBehaviour
+public class CarControllerSystem : MonoBehaviour
 {
 
     [Header("Inputs")]
@@ -134,6 +133,12 @@ public class WheelVehicleVr : MonoBehaviour
     [SerializeField] float speed = 0.0f;
     public float Speed { get { return speed; } }
 
+    [SerializeField] float currentSpeed = 0.0f;
+    public float CurrentSpeed { get { return currentSpeed; } set { currentSpeed = value; } }
+
+    [SerializeField] float maxSpeed = 100.0f;
+    public float MaxSpeed { get { return maxSpeed; } set { maxSpeed = value; } }
+
     [Header("Particles")]
     // Exhaust fumes
     [SerializeField] ParticleSystem[] gasParticles;
@@ -227,6 +232,11 @@ public class WheelVehicleVr : MonoBehaviour
         }
     }
 
+    public void Move(float steering, float accel, float footbrake, float handbrake) {
+      //  steering = turnInputCurve.Evaluate(steering) * steerAngle;
+       // throttle = accel * 5;
+    }
+
     // Update everything
     void FixedUpdate()
     {
@@ -241,7 +251,11 @@ public class WheelVehicleVr : MonoBehaviour
             _inputs = _carController.GetInputs();
 
             // Accelerate & brake
-            throttle = _inputs.z * 1;
+            throttle = _inputs.z * 5;
+
+            if (throttle > 0) {
+                Debug.Log("throttle");
+            }
 
             // Boost
             //boosting = (GetInput(boostInput) > 0.5f);

@@ -37,6 +37,7 @@ namespace UnityStandardAssets.Vehicles.Car
         [SerializeField] private float m_RevRangeBoundary = 1f;
         [SerializeField] private float m_SlipLimit;
         [SerializeField] private float m_BrakeTorque;
+        [SerializeField] private float m_CurrentSpeed;
 
         private Quaternion[] m_WheelMeshLocalRotations;
         private Vector3 m_Prevpos, m_Pos;
@@ -129,6 +130,7 @@ namespace UnityStandardAssets.Vehicles.Car
 
         public void Move(float steering, float accel, float footbrake, float handbrake)
         {
+
             for (int i = 0; i < 4; i++)
             {
                 Quaternion quat;
@@ -191,6 +193,8 @@ namespace UnityStandardAssets.Vehicles.Car
                         m_Rigidbody.velocity = (m_Topspeed/3.6f) * m_Rigidbody.velocity.normalized;
                     break;
             }
+
+            m_CurrentSpeed = speed;
         }
 
 
@@ -214,7 +218,11 @@ namespace UnityStandardAssets.Vehicles.Car
                     break;
 
                 case CarDriveType.RearWheelDrive:
-                    thrustTorque = accel * (m_CurrentTorque / 2f);
+                    if (accel > 0.0f) {
+                        accel = 1;
+                        Debug.Log("accel");
+                    }
+                    thrustTorque = accel  * (m_CurrentTorque / 2f);
                     m_WheelColliders[2].motorTorque = m_WheelColliders[3].motorTorque = thrustTorque;
                     break;
 
