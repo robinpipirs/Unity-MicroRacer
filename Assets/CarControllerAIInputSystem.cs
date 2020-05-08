@@ -46,7 +46,8 @@ public class CarControllerAIInputSystem : MonoBehaviour, ICarController
 
     private Vector3 _inputs = Vector3.zero;
 
-
+    [SerializeField] private float m_DesiredSpeedDebug;
+    [SerializeField] private float m_CurrentSpeed;
     private void Awake()
     {
         // get the car controller reference
@@ -96,6 +97,7 @@ public class CarControllerAIInputSystem : MonoBehaviour, ICarController
                         float cautiousnessRequired = Mathf.InverseLerp(0, m_CautiousMaxAngle,
                                                                         Mathf.Max(spinningAngle,
                                                                                     approachingCornerAngle));
+
                         desiredSpeed = Mathf.Lerp(m_CarController.MaxSpeed, m_CarController.MaxSpeed * m_CautiousSpeedFactor,
                                                     cautiousnessRequired);
                         break;
@@ -125,6 +127,8 @@ public class CarControllerAIInputSystem : MonoBehaviour, ICarController
                     break;
             }
 
+            m_DesiredSpeedDebug = desiredSpeed;
+
             // Evasive action due to collision with other cars:
 
             // our target position starts off as the 'real' target position
@@ -147,6 +151,8 @@ public class CarControllerAIInputSystem : MonoBehaviour, ICarController
                                     (Mathf.PerlinNoise(Time.time * m_LateralWanderSpeed, m_RandomPerlin) * 2 - 1) *
                                     m_LateralWanderDistance;
             }
+
+            m_CurrentSpeed = m_CarController.CurrentSpeed;
 
             // use different sensitivity depending on whether accelerating or braking:
             float accelBrakeSensitivity = (desiredSpeed < m_CarController.CurrentSpeed)

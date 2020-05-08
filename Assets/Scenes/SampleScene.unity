@@ -2241,7 +2241,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &783173903
 Transform:
   m_ObjectHideFlags: 0
@@ -27509,7 +27509,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_CautiousSpeedFactor: 0.2
-  m_CautiousMaxAngle: 34.7
+  m_CautiousMaxAngle: 50.6
   m_CautiousMaxDistance: 100
   m_CautiousAngularVelocityFactor: 10
   m_SteerSensitivity: 0.05
@@ -27519,7 +27519,7 @@ MonoBehaviour:
   m_LateralWanderSpeed: 0.1
   m_AccelWanderAmount: 0.1
   m_AccelWanderSpeed: 0.1
-  m_BrakeCondition: 2
+  m_BrakeCondition: 1
   m_Driving: 1
   m_Target: {fileID: 1336809582}
   m_StopWhenTargetReached: 0

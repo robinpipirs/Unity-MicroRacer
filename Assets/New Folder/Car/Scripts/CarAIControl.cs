@@ -46,6 +46,8 @@ namespace UnityStandardAssets.Vehicles.Car
         private float m_AvoidPathOffset;          // direction (-1 or 1) in which to offset path to avoid other car, whilst avoiding
         private Rigidbody m_Rigidbody;
 
+        [SerializeField] private float m_DesiredSpeedDebug;
+        [SerializeField] private float m_CurrentSpeed;
 
         private void Awake()
         {
@@ -96,6 +98,7 @@ namespace UnityStandardAssets.Vehicles.Car
                                                                                      approachingCornerAngle));
                             desiredSpeed = Mathf.Lerp(m_CarController.MaxSpeed, m_CarController.MaxSpeed*m_CautiousSpeedFactor,
                                                       cautiousnessRequired);
+
                             break;
                         }
 
@@ -123,6 +126,8 @@ namespace UnityStandardAssets.Vehicles.Car
                         break;
                 }
 
+                m_DesiredSpeedDebug = desiredSpeed;
+
                 // Evasive action due to collision with other cars:
 
                 // our target position starts off as the 'real' target position
@@ -145,6 +150,8 @@ namespace UnityStandardAssets.Vehicles.Car
                                        (Mathf.PerlinNoise(Time.time*m_LateralWanderSpeed, m_RandomPerlin)*2 - 1)*
                                        m_LateralWanderDistance;
                 }
+
+                m_CurrentSpeed = m_CarController.CurrentSpeed;
 
                 // use different sensitivity depending on whether accelerating or braking:
                 float accelBrakeSensitivity = (desiredSpeed < m_CarController.CurrentSpeed)

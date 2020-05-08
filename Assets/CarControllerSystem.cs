@@ -133,8 +133,7 @@ public class CarControllerSystem : MonoBehaviour
     [SerializeField] float speed = 0.0f;
     public float Speed { get { return speed; } }
 
-    [SerializeField] float currentSpeed = 0.0f;
-    public float CurrentSpeed { get { return currentSpeed; } set { currentSpeed = value; } }
+    public float CurrentSpeed { get { return _rb.velocity.magnitude * 2.23693629f; } }
 
     [SerializeField] float maxSpeed = 100.0f;
     public float MaxSpeed { get { return maxSpeed; } set { maxSpeed = value; } }
