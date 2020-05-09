@@ -1,5 +1,4 @@
-﻿using Oculus.Platform.Models;
-public class RaceStats
+﻿public class RaceStats
 {
     public readonly int Laps;
     public readonly int TargetCheckpoint;

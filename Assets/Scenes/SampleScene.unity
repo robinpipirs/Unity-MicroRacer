@@ -398,15 +398,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Racecars: {fileID: 23801372}
   Checkpoints: {fileID: 878193698}
+  TotalLaps: 0
   RacePosition: 
   LapTime: 00:00:000
   LastLapTime: 00:00:000
   BestLapTime: 00:00:000
-  laps: 0
-  TotalLaps: 0
-  Laps: 0
-  TargetCheckpoint: 0
-  DistanceToTargetCheckpoint: 0
+  CheckpointTarget: 0
+  Lap: 0
+  DistanceToCheckpoint: 0
 --- !u!4 &183228348 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7737044566801731028, guid: 7cf622e243d5430458e584df2b91c840,
@@ -590,7 +589,7 @@ MonoBehaviour:
   LapTime: {fileID: 1686974468}
   LastLapTime: {fileID: 1202073147}
   BestLapTime: {fileID: 1648595857}
-  CarToTrack: {fileID: 291857068}
+  CarToTrack: {fileID: 318036522}
 --- !u!1001 &216646041
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -651,7 +650,7 @@ PrefabInstance:
     - target: {fileID: 7731096559509024406, guid: 7cf622e243d5430458e584df2b91c840,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7737044566801731028, guid: 7cf622e243d5430458e584df2b91c840,
         type: 3}
@@ -954,15 +953,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Racecars: {fileID: 23801372}
   Checkpoints: {fileID: 878193698}
+  TotalLaps: 0
   RacePosition: 
   LapTime: 00:00:000
   LastLapTime: 00:00:000
   BestLapTime: 00:00:000
-  laps: 0
-  TotalLaps: 0
-  Laps: 0
-  TargetCheckpoint: 0
-  DistanceToTargetCheckpoint: 0
+  CheckpointTarget: 0
+  Lap: 0
+  DistanceToCheckpoint: 0
 --- !u!1 &318036521 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7731096559509024406, guid: 7cf622e243d5430458e584df2b91c840,
@@ -983,15 +981,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Racecars: {fileID: 23801372}
   Checkpoints: {fileID: 878193698}
+  TotalLaps: 0
   RacePosition: 
   LapTime: 00:00:000
   LastLapTime: 00:00:000
   BestLapTime: 00:00:000
-  laps: 0
-  TotalLaps: 0
-  Laps: 0
-  TargetCheckpoint: 0
-  DistanceToTargetCheckpoint: 0
+  CheckpointTarget: 0
+  Lap: 0
+  DistanceToCheckpoint: 0
 --- !u!4 &318036530 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7737044566801731028, guid: 7cf622e243d5430458e584df2b91c840,
@@ -3335,15 +3332,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Racecars: {fileID: 23801372}
   Checkpoints: {fileID: 878193698}
+  TotalLaps: 0
   RacePosition: 
   LapTime: 00:00:00
   LastLapTime: 00:00:00
   BestLapTime: 00:00:00
-  laps: 0
-  TotalLaps: 0
-  Laps: 0
-  TargetCheckpoint: 0
-  DistanceToTargetCheckpoint: 0
+  CheckpointTarget: 0
+  Lap: 0
+  DistanceToCheckpoint: 0
 --- !u!4 &940275304 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7737044566801731028, guid: 7cf622e243d5430458e584df2b91c840,

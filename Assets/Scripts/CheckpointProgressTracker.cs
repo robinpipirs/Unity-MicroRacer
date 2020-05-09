@@ -16,10 +16,13 @@ public class CheckpointProgressTracker : MonoBehaviour
     public RaceStats RaceStats;
 
     public string RacePosition;
-    public string Lap;
     public string LapTime = "00:00:000";
     public string LastLapTime = "00:00:000";
     public string BestLapTime = "00:00:000";
+
+    public int CheckpointTarget;
+    public int Lap;
+    public float DistanceToCheckpoint;
 
     private int _targetCheckpointNumber;
     private int _currentLap;
@@ -28,11 +31,11 @@ public class CheckpointProgressTracker : MonoBehaviour
     private float bestLapTimeFloat = float.MaxValue;
     private float startTime;
 
-    private bool firstLap = true;
 
     // Start is called before the first frame update
     void Start()
     {
+        _currentLap = -1;
         GetCheckpointProgressTrackers();
         GetCheckpoints();
     }
@@ -68,6 +71,10 @@ public class CheckpointProgressTracker : MonoBehaviour
             _checkpointNodes.Count,
             _distanceToTargetCheckpoint );
 
+        Lap = _currentLap;
+        CheckpointTarget = _targetCheckpointNumber;
+        DistanceToCheckpoint = _distanceToTargetCheckpoint;
+
         RaceStats = raceStats;
     }
 
@@ -83,40 +90,12 @@ public class CheckpointProgressTracker : MonoBehaviour
         int opponentsInFront = 0;
         for (int i = 0; i < opponentRaceCars.Count; i++)
         {
-            if (isOpponentInFront(opponentRaceCars[i].RaceStats, RaceStats)) {
+            if (RaceHelperFuntions.IsOpponentInFront(opponentRaceCars[i].RaceStats, RaceStats)) {
                 opponentsInFront++;
             }
         }
 
         return opponentsInFront;
-    }
-
-    private bool isOpponentInFront(RaceStats opponentCar, RaceStats thisCar)
-    {
-        bool opponentIsInFront = opponentCar.Laps > thisCar.Laps;
-        if (opponentIsInFront)
-        {
-            return true;
-        }
-        else
-        {
-            opponentIsInFront = opponentCar.Laps == thisCar.Laps && opponentCar.TargetCheckpoint > thisCar.TargetCheckpoint;
-            if (opponentIsInFront)
-            {
-                return true;
-            }
-            else
-            {
-
-                opponentIsInFront = opponentCar.TargetCheckpoint == thisCar.TargetCheckpoint && opponentCar.DistanceToTargetCheckpoint < thisCar.DistanceToTargetCheckpoint;
-                if (opponentIsInFront)
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     private string secondsToTime(float time) 
@@ -169,7 +148,7 @@ public class CheckpointProgressTracker : MonoBehaviour
 
             if (_currentNode == _checkpointNodes.Count - 1)
             {
-                if (!firstLap)
+                if (_currentLap >= 0)
                 {
                     UpdateLastLap();
                     UpdateBestLap();
@@ -178,7 +157,7 @@ public class CheckpointProgressTracker : MonoBehaviour
                 }
                 else
                 {
-                    firstLap = false;
+                    _currentLap++;
                     ResetLapTimer();
                 }
             }
