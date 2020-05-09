@@ -39,53 +39,69 @@ public class CheckpointProgressTracker : MonoBehaviour
     void FixedUpdate()
     {
         UpdateElapsedTime();
+        UpdateDistanceToTargetCheckpoint();
         UpdateRacePosition();
     }
-
-    private void UpdateRacePosition()
-    {
-        var distanceToTargetCheckpoint = Vector3.Distance(transform.position, _checkpointNodes[_currentNode].transform.position);
-        DistanceToTargetCheckpoint = distanceToTargetCheckpoint;
-
-        int opponentsInFront = 0;
-
-        for (int i = 0; i < _opponentRaceCars.Count; i++) {
-            var opponentCar = _opponentRaceCars[i];
-
-            bool opponentIsInFront = opponentCar.Laps > Laps;
-            if (opponentIsInFront) {
-                opponentsInFront++;
-                continue;
-            } else 
-            {
-                opponentIsInFront = opponentCar.Laps == Laps && opponentCar.TargetCheckpoint > TargetCheckpoint;
-                if (opponentIsInFront)
-                {
-                    opponentsInFront++;
-                    continue;
-                }
-                else {
-
-                    opponentIsInFront = opponentCar.TargetCheckpoint == TargetCheckpoint && opponentCar.DistanceToTargetCheckpoint < DistanceToTargetCheckpoint;
-                    if (opponentIsInFront) {
-                        opponentsInFront++;
-                        continue;
-                    }
-                }
-            }
-        }
-
-        int racePosition = opponentsInFront;
-        racePosition++;
-
-        RacePosition = string.Format("{0} / {1}", racePosition, _opponentRaceCars.Count);
-    }
-
     private void UpdateElapsedTime()
     {
         float timeElapsedFloat = Time.time - startTime;
         string lapTimerString = secondsToTime(timeElapsedFloat);
         LapTime = lapTimerString;
+    }
+    private void UpdateDistanceToTargetCheckpoint()
+    {
+        var distanceToTargetCheckpoint = Vector3.Distance(transform.position, _checkpointNodes[_currentNode].transform.position);
+        DistanceToTargetCheckpoint = distanceToTargetCheckpoint;
+    }
+
+    private void UpdateRacePosition()
+    {
+        int opponentsInfront = GetOpponentsInFront(_opponentRaceCars);
+        int racePosition = opponentsInfront + 1;
+
+        RacePosition = string.Format("{0} / {1}", racePosition, (_opponentRaceCars.Count + 1));
+    }
+
+    private int GetOpponentsInFront(List<CheckpointProgressTracker> opponentRaceCars)
+    {
+        int opponentsInFront = 0;
+        for (int i = 0; i < opponentRaceCars.Count; i++)
+        {
+            CheckpointProgressTracker thisRaceCarTracker = this;
+            if (isOpponentInFront(opponentRaceCars[i], thisRaceCarTracker)) {
+                opponentsInFront++;
+            }
+        }
+
+        return opponentsInFront;
+    }
+
+    private bool isOpponentInFront(CheckpointProgressTracker opponentCar, CheckpointProgressTracker thisCar)
+    {
+        bool opponentIsInFront = opponentCar.Laps > thisCar.Laps;
+        if (opponentIsInFront)
+        {
+            return true;
+        }
+        else
+        {
+            opponentIsInFront = opponentCar.Laps == Laps && opponentCar.TargetCheckpoint > thisCar.TargetCheckpoint;
+            if (opponentIsInFront)
+            {
+                return true;
+            }
+            else
+            {
+
+                opponentIsInFront = opponentCar.TargetCheckpoint == TargetCheckpoint && opponentCar.DistanceToTargetCheckpoint < thisCar.DistanceToTargetCheckpoint;
+                if (opponentIsInFront)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private string secondsToTime(float time) 
